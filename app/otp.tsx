@@ -54,22 +54,24 @@ const Page = () => {
 
                 <View style = {styles.list}>
                     <View style = {styles.listItem}>
-                        <Text style = {styles.listItem}>Germany</Text>
+                        <Text style = {styles.listItemText}>Germany</Text>
                         <Ionicons name = "chevron-forward" size = {20} color = {Colors.gray }></Ionicons>
                     </View>
                     <View style = {styles.seperator}></View>
-                </View>
 
-                <MaskInput
+                    <MaskInput
                     value={phoneNumber}
-                    keyboardType="numeric"
-                    autoFocus
+                    style = {styles.input}
+                    keyboardType="phone-pad"
+                    autoFocus = {true}
                     placeholder="+12 your phone number"
                     onChangeText={(masked, unmasked) => {
                     setPhoneNumber(masked);
                     }}
                     mask={GER_PHONE}
                 />
+
+                </View>
 
                 <Text style = {styles.legal}>
                     You must be{' '}
@@ -119,6 +121,10 @@ const styles = StyleSheet.create ({
         padding : 6,
         marginBottom : 10,
     },
+    listItemText: {
+        fontSize: 18,
+        color: Colors.primary,
+      },
     seperator : {
         width : '100%',
         height : StyleSheet.hairlineWidth,
@@ -150,6 +156,14 @@ const styles = StyleSheet.create ({
         fontSize : 22,
         fontWeight : '500',
     }
+    ,
+    input : {
+        backgroundColor : '#fff',
+        width : '100%',
+        fontSize : 16,
+        padding : 6,
+        marginTop : 10,
+    },
 });
 
 export default Page;
