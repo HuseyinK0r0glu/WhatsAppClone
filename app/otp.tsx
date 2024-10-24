@@ -1,3 +1,4 @@
+// otp means One-Time-Password
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import {View,KeyboardAvoidingView,Platform,Text,Linking,StyleSheet, Touchable, TouchableOpacity, ActivityIndicator} from 'react-native';
@@ -42,7 +43,7 @@ const Page = () => {
         setTimeout( () => {
             setLoading(false); 
             router.push(`/verify/${phoneNumber}`);
-        },2000);
+        },200);
     };
 
     const trySignIn = async () => {
