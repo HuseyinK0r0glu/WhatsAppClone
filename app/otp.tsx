@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import {View,KeyboardAvoidingView,Platform,Text,Linking,StyleSheet, Touchable, TouchableOpacity} from 'react-native';
+import {View,KeyboardAvoidingView,Platform,Text,Linking,StyleSheet, Touchable, TouchableOpacity, ActivityIndicator} from 'react-native';
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -38,7 +38,11 @@ const Page = () => {
     };
 
     const sendOTP = async () => {
-
+        setLoading(true);
+        setTimeout( () => {
+            setLoading(false); 
+            router.push(`/verify/${phoneNumber}`);
+        },2000);
     };
 
     const trySignIn = async () => {
@@ -48,6 +52,13 @@ const Page = () => {
     return ( 
         <KeyboardAvoidingView style = {{flex : 1}}>
             <View style = {styles.container}> 
+                {loading && (
+                    <View style = {[StyleSheet.absoluteFill,styles.loading]}>
+                        {/* ActivityIndicator is a component that shows a loading spinner or progress indicator. */}
+                        <ActivityIndicator size="large" color = {Colors.primary}/>
+                        <Text style = {{ fontSize : 18 , padding : 10}}>Sending Code...</Text>
+                    </View>
+                )}
                 <Text style = {styles.description}>
                     Whatsapp will need to verify your account. Carrier charges may apply.
                 </Text>
@@ -163,6 +174,22 @@ const styles = StyleSheet.create ({
         fontSize : 16,
         padding : 6,
         marginTop : 10,
+    },
+    loading : {
+        // The syntax ...StyleSheet.absoluteFillObject is using the spread operator (...) to copy the properties of StyleSheet.absoluteFillObject into the loading style.
+        // it is shorthand for the following
+        // {
+        //     position: 'absolute',
+        //     left: 0,
+        //     right: 0,
+        //     top: 0,
+        //     bottom: 0
+        // }
+        ...StyleSheet.absoluteFillObject,
+        zIndex : 10,
+        backgroundColor : '#fff',
+        justifyContent : 'center',
+        alignItems : 'center',
     },
 });
 
