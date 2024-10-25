@@ -6,6 +6,7 @@ import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaskInput from 'react-native-mask-input';    
+import { useSignUp } from '@clerk/clerk-expo';
 
 const GER_PHONE = [
     `+`,
