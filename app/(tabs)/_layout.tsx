@@ -8,6 +8,7 @@ const Layout = () => {
     return (
         <GestureHandlerRootView style = {{flex : 1}}>
             <Tabs screenOptions={{
+                headerTitleAlign: 'center',
                 tabBarStyle : {
                     backgroundColor : Colors.background,
                 },
@@ -23,7 +24,7 @@ const Layout = () => {
                     title : 'Updates',
                     tabBarIcon : ({size,color}) => (
                         <MaterialIcons name = 'update' size = {size} color = {color} />
-                    ),    
+                    ),   
                 }}/>
                 <Tabs.Screen name = "calls" options = {{
                     title : 'Calls',
