@@ -1,5 +1,8 @@
+import { defaultStyles } from '@/constants/styles';
 import { useAuth } from '@clerk/clerk-expo';
+import React from 'react';
 import {View,Text} from 'react-native';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const Page = () => {
@@ -65,8 +68,20 @@ const Page = () => {
     const { signOut } = useAuth();
 
     return (
-        <View>
-            <Text>Settings</Text>
+        <View style = {{flex : 1 , backgroundColor : Colors.backgroundColor}}>
+            <ScrollView>
+                <View style = {defaultStyles.block}>
+                    <FlatList 
+                        data={devices} 
+                        scrollEnabled = {false}
+                        ItemSeparatorComponent={() => <View style={defaultStyles.separator}/>}
+                        renderItem={({ item}) => (
+                        <View style={defaultStyles.item}> 
+                            <Text style={{}}>{item.name}</Text>
+                        </View>
+                    )}/>
+                </View>
+            </ScrollView>
         </View>   
     )
 }
