@@ -1,5 +1,5 @@
-import { Stack,useLocalSearchParams } from 'expo-router'
-import {View ,Text,StyleSheet, TouchableOpacity , Platform} from 'react-native'
+import { router, Stack,useLocalSearchParams } from 'expo-router'
+import {View ,Text,StyleSheet, TouchableOpacity , Platform, Alert} from 'react-native'
 import { useEffect, useState } from 'react';
 import Colors from '@/constants/Colors';
 import {
@@ -8,6 +8,7 @@ import {
     useBlurOnFulfill,
     useClearByFocusCell,
   } from 'react-native-confirmation-code-field';
+import { isClerkAPIResponseError, useSignIn, useSignUp } from '@clerk/clerk-expo';
 
 const CELL_COUNT = 6;
 
@@ -20,6 +21,10 @@ const Page = () => {
         setValue : setCode,
     });
 
+    const { signUp , setActive } = useSignUp();
+    const { signIn } = useSignIn();
+
+
     useEffect(() => {
         if(code.length === 6){
             if(signin === 'true'){
@@ -30,11 +35,92 @@ const Page = () => {
         }
     },[code]);
 
-    const verifyCode = async () => {};
+    const verifyCode = async () => {
+        try {
+            // Use the code provided by the user and attempt verification
+            const signInAttempt = await signUp!.attemptPhoneNumberVerification({
+              code,
+            })
+      
+            // If verification was completed, set the session to active
+            // and redirect the user
+            if (signInAttempt.status === 'complete') {
+              await setActive!({ session: signInAttempt.createdSessionId })
 
-    const verifySignIn = async () => {};
+            } else {
+              // If the status is not complete, check why. User may need to
+              // complete further steps.
+              console.error(signInAttempt)
+            }
+          } catch (err) {
+            // See https://clerk.com/docs/custom-flows/error-handling
+            // for more info on error handling
+            console.error('Error:', JSON.stringify(err, null, 2))
+            if(isClerkAPIResponseError(err)){
+                Alert.alert('Error',err.errors[0].message);
+            }
+          }
+    };
 
-    const resendCode = async () => {};
+    const verifySignIn = async () => {
+        try {
+            // Use the code provided by the user and attempt verification
+            const signInAttempt = await signIn!.attemptFirstFactor({
+              strategy: 'phone_code',
+              code,
+            })
+      
+            // If verification was completed, set the session to active
+            // and redirect the user
+            if (signInAttempt.status === 'complete') {
+              await setActive!({ session: signInAttempt.createdSessionId })
+      
+              router.push('/')
+            } else {
+              // If the status is not complete, check why. User may need to
+              // complete further steps.
+              console.error(signInAttempt)
+            }
+          } catch (err) {
+            // See https://clerk.com/docs/custom-flows/error-handling
+            // for more info on error handling
+            console.error('Error:', JSON.stringify(err, null, 2))
+            if(isClerkAPIResponseError(err)){
+                Alert.alert('Error',err.errors[0].message);
+            }
+          }
+    };
+
+    const resendCode = async () => {
+        try{
+            if(signin === 'true'){
+                const {supportedFirstFactors} = await signIn!.create({
+                    identifier : phone,
+                });
+
+                const firstPhoneFactor: any = supportedFirstFactors?.find((factor:any) => {
+                    return factor.strategy === 'phone_code';
+                });
+
+                const {phoneNumberId} = firstPhoneFactor;
+
+                await signIn!.prepareFirstFactor({
+                    strategy : 'phone_code',
+                    phoneNumberId,
+                });
+            }else {
+                await signUp!.create({
+                    phoneNumber:phone,
+                })
+                signUp!.preparePhoneNumberVerification();
+            }
+        }catch(err){
+            console.log('error',JSON.stringify(err,null,2));
+            if(isClerkAPIResponseError(err)){
+                Alert.alert('Error',err.errors[0].message);
+            }
+        }
+    };
 
     return  (
         <View style = {styles.container}>

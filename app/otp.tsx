@@ -1,12 +1,12 @@
 // otp means One-Time-Password
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import {View,KeyboardAvoidingView,Platform,Text,Linking,StyleSheet, Touchable, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {View,KeyboardAvoidingView,Platform,Text,Linking,StyleSheet, Touchable, TouchableOpacity, ActivityIndicator, Alert} from 'react-native';
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaskInput from 'react-native-mask-input';    
-import { useSignUp } from '@clerk/clerk-expo';
+import { isClerkAPIResponseError, useSignIn, useSignUp } from '@clerk/clerk-expo';
 
 const GER_PHONE = [
     `+`,
@@ -27,6 +27,19 @@ const GER_PHONE = [
     /\d/,
   ];
 
+const TUR_PHONE = [
+    `+`,
+    '9', '0',  // Country code for Turkey
+    ' ',
+    /\d/, /\d/, /\d/, // Area code
+    ' ',
+    /\d/, /\d/, /\d/, // First 3 digits of the main number
+    ' ',
+    /\d/, /\d/,       // Next 2 digits
+    ' ',
+    /\d/, /\d/        // Final 2 digits
+];
+
 
 const Page = () => {
     const [loading,setLoading] = useState(false);
@@ -34,6 +47,8 @@ const Page = () => {
     const router = useRouter();
     const keyBoardVerticalOffset = Platform.OS === 'ios' ? 90 : 0;
     const { bottom } = useSafeAreaInsets();
+    const { signUp , setActive } = useSignUp();
+    const { signIn } = useSignIn();
 
     const openLink = () => {
         Linking.openURL("https://www.whatsapp.com/legal/#privacy-policy");
@@ -41,18 +56,51 @@ const Page = () => {
 
     const sendOTP = async () => {
         setLoading(true);
-        setTimeout( () => {
-            setLoading(false); 
+        try{
+            await signUp!.create({
+                phoneNumber
+            })
+            signUp!.preparePhoneNumberVerification();
             router.push(`/verify/${phoneNumber}`);
-        },200);
+
+        }catch(err){
+            console.log(err);
+            if(isClerkAPIResponseError(err)){
+                if(err.errors[0].code === 'form_identifier_exists'){
+                    console.log('user exists');
+                    await trySignIn();
+                }else {
+                    setLoading(false);
+                    Alert.alert('Error',err.errors[0].message);
+                }
+            }
+        }
     };
 
     const trySignIn = async () => {
+        
+        // Start the sign-in process using the phone number method
+        const { supportedFirstFactors } = await signIn!.create({
+            identifier: phoneNumber,
+        })
+      
+        const firstPhoneFactor: any = supportedFirstFactors?.find((factor:any) => {
+            return factor.strategy === 'phone_code';
+        });
 
+        const {phoneNumberId} = firstPhoneFactor;
+
+        await signIn!.prepareFirstFactor({
+            strategy : 'phone_code',
+            phoneNumberId,
+        });
+
+        router.push(`/verify/${phoneNumber}?signin=true`);
+        setLoading(false);
     };
 
     return ( 
-        <KeyboardAvoidingView style = {{flex : 1}}>
+        <KeyboardAvoidingView behavior = 'padding' keyboardVerticalOffset = {keyBoardVerticalOffset} style = {{flex : 1}}>
             <View style = {styles.container}> 
                 {loading && (
                     <View style = {[StyleSheet.absoluteFill,styles.loading]}>
@@ -67,7 +115,7 @@ const Page = () => {
 
                 <View style = {styles.list}>
                     <View style = {styles.listItem}>
-                        <Text style = {styles.listItemText}>Germany</Text>
+                        <Text style = {styles.listItemText}>Turkiye</Text>
                         <Ionicons name = "chevron-forward" size = {20} color = {Colors.gray }></Ionicons>
                     </View>
                     <View style = {styles.seperator}></View>
@@ -75,13 +123,13 @@ const Page = () => {
                     <MaskInput
                     value={phoneNumber}
                     style = {styles.input}
-                    keyboardType="phone-pad"
+                    keyboardType="numeric"
                     autoFocus = {true}
-                    placeholder="+12 your phone number"
+                    placeholder="+90 your phone number"
                     onChangeText={(masked, unmasked) => {
                     setPhoneNumber(masked);
                     }}
-                    mask={GER_PHONE}
+                    mask={TUR_PHONE}
                 />
 
                 </View>
