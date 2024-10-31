@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import {View,Text} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
 const Page = () => {
 
@@ -14,18 +14,23 @@ const Page = () => {
     };
 
     return (
-        <View>
-            <Stack.Screen options = {{
-                headerLeft : () => {
-                    return (
-                        <TouchableOpacity>
-                            <Text style = {{color : Colors.primary,fontSize : 18}}>
-                                {isEditing ? 'Done' : 'Edit'}
-                            </Text>
-                        </TouchableOpacity>
-                    )
-                },
-            }}/>
+        <View style = {{flex : 1,backgroundColor : Colors.background}}>
+            <Stack.Screen 
+                options = {{
+                    headerLeft : () => {
+                        return (
+                            <TouchableOpacity>
+                                <Text style = {{color : Colors.primary,fontSize : 18}}>
+                                    {isEditing ? 'Done' : 'Edit'}
+                                </Text>
+                            </TouchableOpacity>
+                        )
+                    },
+                }}
+            />
+            <ScrollView contentInsetAdjustmentBehavior='automatic'>
+
+            </ScrollView>
         </View>   
     )
 }

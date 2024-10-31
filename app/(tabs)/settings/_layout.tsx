@@ -5,9 +5,18 @@ import { View , Text } from 'react-native'
 const Layout = () => {
     return (
         <Stack>
-            <Stack.Screen name = "index" options={{ title : 'Settings' , headerLargeTitle : true,headerLargeTitleShadowVisible : false, headerStyle : {backgroundColor : Colors.background},headerSearchBarOptions : {
-                placeholder : 'Search',
-            }}} />
+            <Stack.Screen 
+                name = "index" 
+                options={{ 
+                    title : 'Settings' , 
+                    headerLargeTitle : true,
+                    headerLargeTitleShadowVisible : false,
+                    headerStyle : {backgroundColor : Colors.background},
+                    headerSearchBarOptions : {
+                        placeholder : 'Search',
+                    },
+                }} 
+            />
         </Stack>
     )
 }

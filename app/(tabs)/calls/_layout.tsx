@@ -13,7 +13,8 @@ const Layout = () => {
                     title : 'Calls', 
                     headerLargeTitle : true,headerLargeTitleShadowVisible : false,
                     headerBlurEffect : 'regular',
-                    headerStyle : {backgroundColor : Colors.background},headerSearchBarOptions : {
+                    headerStyle : {backgroundColor : Colors.background},
+                    headerSearchBarOptions : {
                         placeholder : 'Search',
                     },
                     headerRight : () => {
