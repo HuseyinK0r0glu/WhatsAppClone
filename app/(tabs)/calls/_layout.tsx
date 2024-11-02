@@ -11,8 +11,9 @@ const Layout = () => {
                 name = "index" 
                 options={{ 
                     title : 'Calls', 
-                    headerLargeTitle : true,headerLargeTitleShadowVisible : false,
-                    headerBlurEffect : 'regular',
+                    // these are for IOS
+                    // headerLargeTitle : true,headerLargeTitleShadowVisible : false,
+                    // headerBlurEffect : 'regular',
                     headerStyle : {backgroundColor : Colors.background},
                     headerSearchBarOptions : {
                         placeholder : 'Search',
