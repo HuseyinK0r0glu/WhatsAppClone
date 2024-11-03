@@ -3,12 +3,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { SegmentedControl } from '@/components/SegmentedControl';
-import {View,Text,ScrollView, TouchableOpacity,StyleSheet,Image, Animated} from 'react-native';
+import Animated ,{FadeInUp,FadeOutUp} from 'react-native-reanimated';
+import {View,Text,ScrollView, TouchableOpacity,StyleSheet,Image} from 'react-native';
 import calls from '@/assets/data/calls.json'
 import { FlatList } from 'react-native-gesture-handler';
 import { defaultStyles } from '@/constants/styles';
 import { format } from 'date-fns';
-import { FadeInUp, FadeOut, FadeOutUp } from 'react-native-reanimated';
 
 const Page = () => {
 
@@ -52,7 +52,7 @@ const Page = () => {
                     <FlatList data = {items} scrollEnabled = {false} keyExtractor={(item) => item.id.toString()} 
                     ItemSeparatorComponent={() => <View style={defaultStyles.separator}/>}
                     renderItem={({item,index}) => (
-                        <Animated.View entering = {FadeInUp.delay(index * 20)} exiting={FadeOutUp}>
+                        <Animated.View entering = {FadeInUp.delay(index * 10)} exiting={FadeOutUp}>
                             <View style={defaultStyles.item}>
                                 <Image source={{ uri: item.img }} style={styles.avatar} />
 
