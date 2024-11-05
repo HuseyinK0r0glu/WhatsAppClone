@@ -3,32 +3,14 @@ import { Animated, StyleSheet, Text, View, I18nManager } from 'react-native';
 
 import { RectButton, Swipeable } from 'react-native-gesture-handler';
 
+type SwipeableRowProps = {
+  children : React.ReactNode;
+  onDelete : () => void;
+};
+
 export default class SwipeableRow extends Component<
-  PropsWithChildren<unknown>
+  SwipeableRowProps
 > {
-  private renderLeftActions = (
-    _progress: Animated.AnimatedInterpolation<number>,
-    dragX: Animated.AnimatedInterpolation<number>
-  ) => {
-    const trans = dragX.interpolate({
-      inputRange: [0, 50, 100, 101],
-      outputRange: [-20, 0, 0, 1],
-      extrapolate: 'clamp',
-    });
-    return (
-      <RectButton style={styles.leftAction} onPress={this.close}>
-        <Animated.Text
-          style={[
-            styles.actionText,
-            {
-              transform: [{ translateX: trans }],
-            },
-          ]}>
-          Archive
-        </Animated.Text>
-      </RectButton>
-    );
-  };
 
   private renderRightAction = (
     text: string,
@@ -42,8 +24,6 @@ export default class SwipeableRow extends Component<
     });
     const pressHandler = () => {
       this.close();
-      // eslint-disable-next-line no-alert
-      window.alert(text);
     };
 
     return (
@@ -63,12 +43,10 @@ export default class SwipeableRow extends Component<
   ) => (
     <View
       style={{
-        width: 192,
+        width: 300,
         flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
       }}>
-      {this.renderRightAction('More', '#C8C7CD', 192, progress)}
-      {this.renderRightAction('Flag', '#ffab00', 128, progress)}
-      {this.renderRightAction('More', '#dd2c00', 64, progress)}
+      {this.renderRightAction('Delete', '#dd2c00', 200, progress)}
     </View>
   );
 
@@ -79,6 +57,7 @@ export default class SwipeableRow extends Component<
   };
   private close = () => {
     this.swipeableRow?.close();
+    this.props.onDelete();
   };
   render() {
     const { children } = this.props;
@@ -87,16 +66,8 @@ export default class SwipeableRow extends Component<
         ref={this.updateRef}
         friction={2}
         enableTrackpadTwoFingerGesture
-        leftThreshold={30}
         rightThreshold={40}
-        renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}
-        onSwipeableOpen={(direction) => {
-          console.log(`Opening swipeable from the ${direction}`);
-        }}
-        onSwipeableClose={(direction) => {
-          console.log(`Closing swipeable to the ${direction}`);
-        }}>
+        renderRightActions={this.renderRightActions}>
         {children}
       </Swipeable>
     );
@@ -104,11 +75,6 @@ export default class SwipeableRow extends Component<
 }
 
 const styles = StyleSheet.create({
-  leftAction: {
-    flex: 1,
-    backgroundColor: '#497AFC',
-    justifyContent: 'center',
-  },
   actionText: {
     color: 'white',
     fontSize: 16,

@@ -10,7 +10,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { defaultStyles } from '@/constants/styles';
 import { format } from 'date-fns';
 import SwipeableRow from '@/components/SwipeableRow';
-
+import * as Haptics from "expo-haptics";
 
 const Page = () => {
 
@@ -30,6 +30,11 @@ const Page = () => {
             setItems(calls.filter((item) => item.missed))
         }
     },[selectedOption]);
+
+    const removeCall = (item : any) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        setItems(items.filter((i) => i.id !== item.id))
+    };
 
     return (
         <View style = {{flex : 1,backgroundColor : Colors.background}}>
@@ -52,9 +57,9 @@ const Page = () => {
             <ScrollView contentInsetAdjustmentBehavior='automatic' contentContainerStyle = {{paddingBottom:40}}>
                 <View style={defaultStyles.block}>
                     <FlatList data = {items} scrollEnabled = {false} keyExtractor={(item) => item.id.toString()} 
-                    ItemSeparatorComponent={() => <View style={defaultStyles.separator}/>}
+                    ItemSeparatorComponent={() => <View style= {defaultStyles.separator}/>}
                     renderItem={({item,index}) => (
-                        <SwipeableRow>
+                        <SwipeableRow onDelete={() => removeCall(item)}>
                             <Animated.View entering = {FadeInUp.delay(index * 10)} exiting={FadeOutUp}>
                                 <View style={defaultStyles.item}>
                                     <Image source={{ uri: item.img }} style={styles.avatar} />
