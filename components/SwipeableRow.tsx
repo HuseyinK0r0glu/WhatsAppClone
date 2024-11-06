@@ -11,7 +11,7 @@ type SwipeableRowProps = {
 export default class SwipeableRow extends Component<
   SwipeableRowProps
 > {
-
+  
   private renderRightAction = (
     text: string,
     color: string,
